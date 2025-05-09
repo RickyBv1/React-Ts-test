@@ -1,7 +1,5 @@
 # Technical Test with TypeScript and React
 
-This is a technical test from a European company for a salary of €55,000 per year.
-
 The goal of this technical test is to create an application similar to the one provided in this link: https://midu-react-11.surge.sh/. To achieve this, you should use the API provided by https://randomuser.me/.
 
 Steps to follow:
