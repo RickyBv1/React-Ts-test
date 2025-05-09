@@ -1,10 +1,14 @@
 import { useEffect, useState } from "react";
 import "./App.css";
-import { type User } from "./types.d";
 import { UsersList } from "./components/UsersList";
 
 function App() {
-  const [users, setUsers] = useState<User[]>([]);
+  const [users, setUsers] = useState([]);
+  const [showColors, setShowColors] = useState(false);
+
+  const toggleColors = () => {
+    setShowColors(!showColors);
+  };
 
   useEffect(() => {
     fetch("https://randomuser.me/api?results=100")
@@ -20,8 +24,12 @@ function App() {
   return (
     <>
       <h1>Technical Test</h1>
-
-      <UsersList users={users} />
+      <header>
+        <button onClick={toggleColors}>Color rows</button>
+      </header>
+      <main>
+        <UsersList showColors={showColors} users={users} />
+      </main>
     </>
   );
 }
