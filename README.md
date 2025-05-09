@@ -6,8 +6,8 @@ The goal of this technical test is to create an application similar to the one p
 
 Steps to follow:
 
-- [] Fetch 100 rows of data using the API.
-- [] Display the data in a table format, similar to the example.
+- [x] Fetch 100 rows of data using the API.
+- [x] Display the data in a table format, similar to the example.
 - [] Provide the option to color rows as shown in the example.
   - [] Allow the data to be sorted by country as demonstrated in the example.
 - [] Enable the ability to delete a row as shown in the example.
