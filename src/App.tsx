@@ -10,9 +10,6 @@ function App() {
   const [filterCountry, setFilterCountry] = useState<string | null>(null);
 
   const originalUsers = useRef<User[]>([]);
-  // useRef -> para guardar un valor
-  // que queremos que se comparta entre renderizados
-  // pero que al cambiar, no vuelva a renderizar el componente
 
   const toggleColors = () => {
     setShowColors(!showColors);
@@ -50,7 +47,6 @@ function App() {
   }, []);
 
   const filteredUsers = useMemo(() => {
-    console.log("calculate filteredUsers");
     return filterCountry != null && filterCountry.length > 0
       ? users.filter((user) => {
           return user.location.country
@@ -61,8 +57,6 @@ function App() {
   }, [users, filterCountry]);
 
   const sortedUsers = useMemo(() => {
-    console.log("calculate sortedUsers");
-
     if (sorting === SortBy.NONE) return filteredUsers;
 
     const compareProperties: Record<string, (user: User) => any> = {
