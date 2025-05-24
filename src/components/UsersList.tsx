@@ -1,35 +1,62 @@
-import { type User } from "../types.d";
+import { SortBy, type User } from "../types.d";
 
 interface Props {
+  changeSorting: (sortBy: SortBy) => void;
+  deleteUser: (email: string) => void;
   showColors: boolean;
   users: User[];
 }
-export function UsersList({ showColors, users }: Props) {
+export function UsersList({
+  changeSorting,
+  deleteUser,
+  showColors,
+  users,
+}: Props) {
   return (
     <table width={"100%"}>
       <thead>
-        <th>Picture</th>
-        <th>Name</th>
-        <th>Last name</th>
-        <th>Country</th>
-        <th>Actions</th>
+        <tr>
+          <th>Picture</th>
+          <th
+            className="pointer"
+            onClick={() => {
+              changeSorting(SortBy.NAME);
+            }}
+          >
+            Name
+          </th>
+          <th
+            className="pointer"
+            onClick={() => {
+              changeSorting(SortBy.LAST);
+            }}
+          >
+            Last name
+          </th>
+          <th
+            className="pointer"
+            onClick={() => {
+              changeSorting(SortBy.COUNTRY);
+            }}
+          >
+            Country
+          </th>
+          <th>Actions</th>
+        </tr>
       </thead>
 
-      <tbody>
-        {users.map((user, index) => {
-          const backgroundColor = index % 2 === 0 ? "#333" : "#555";
-          const color = showColors ? backgroundColor : "transparent";
-
+      <tbody className={showColors ? "table--showColors" : ""}>
+        {users.map((user) => {
           return (
-            <tr key={index} style={{ backgroundColor: color }}>
+            <tr key={user.email}>
               <td>
-                <img src={user.picture.thumbnail} alt="User profile picture" />
+                <img src={user.picture.thumbnail} alt="thumbnail" />
               </td>
               <td>{user.name.first}</td>
               <td>{user.name.last}</td>
               <td>{user.location.country}</td>
               <td>
-                <button>Delete</button>
+                <button onClick={() => deleteUser(user.email)}>Delete</button>
               </td>
             </tr>
           );
