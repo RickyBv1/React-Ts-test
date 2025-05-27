@@ -11,6 +11,7 @@ function App() {
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
 
   const originalUsers = useRef<User[]>([]);
 
@@ -41,14 +42,17 @@ function App() {
     setLoading(true);
     setError(false);
 
-    fetch("https://randomuser.me/api?results=10")
+    fetch(`https://randomuser.me/api?results=10&seed=ricky&page=${currentPage}`)
       .then(async (res) => {
         if (!res.ok) throw new Error("Failed to fetch users");
         return await res.json();
       })
       .then((res) => {
-        setUsers(res.results);
-        originalUsers.current = res.results;
+        setUsers((prevUsers) => {
+          const newUsers = prevUsers.concat(res.results);
+          originalUsers.current = newUsers;
+          return newUsers;
+        });
       })
       .catch((err) => {
         setError(err);
@@ -57,7 +61,7 @@ function App() {
       .finally(() => {
         setLoading(false);
       });
-  }, []);
+  }, [currentPage]);
 
   const filteredUsers = useMemo(() => {
     return filterCountry != null && filterCountry.length > 0
@@ -106,19 +110,25 @@ function App() {
         />
       </header>
       <main>
-        {loading && <strong>Loading...</strong>}
-
-        {!loading && error && <p>Error loading users</p>}
-
-        {!loading && !error && users.length === 0 && <p>No users found</p>}
-
-        {!loading && !error && users.length > 0 && (
+        {users.length > 0 && (
           <UsersList
             changeSorting={handleChangeSort}
             deleteUser={handleDelete}
             showColors={showColors}
             users={sortedUsers}
           />
+        )}
+
+        {loading && <strong>Loading...</strong>}
+
+        {error && <p>Error loading users</p>}
+
+        {!error && users.length === 0 && <p>No users found</p>}
+
+        {!loading && !error && (
+          <button onClick={() => setCurrentPage(currentPage + 1)}>
+            Load more results
+          </button>
         )}
       </main>
     </div>
