@@ -83,7 +83,7 @@ function App() {
   const sortedUsers = useMemo(() => {
     if (sorting === SortBy.NONE) return filteredUsers;
 
-    const compareProperties: Record<string, (user: User) => any> = {
+    const compareProperties: Record<string, (user: User) => string> = {
       [SortBy.COUNTRY]: (user) => user.location.country,
       [SortBy.NAME]: (user) => user.name.first,
       [SortBy.LAST]: (user) => user.name.last,
@@ -116,6 +116,7 @@ function App() {
           }}
         />
       </header>
+
       <main>
         {users.length > 0 && (
           <UsersList
