@@ -126,7 +126,7 @@ function App() {
 
         {!isLoading && !isError && users.length === 0 && <p>No users found</p>}
 
-        {!isLoading && !isError && (
+        {!isLoading && !isError && hasNextPage === true && (
           <button
             onClick={() => {
               void fetchNextPage();
