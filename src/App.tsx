@@ -135,6 +135,10 @@ function App() {
             Load more results
           </button>
         )}
+
+        {!isLoading && !isError && hasNextPage === false && (
+          <p>No more results</p>
+        )}
       </main>
     </div>
   );
