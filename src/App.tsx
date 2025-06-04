@@ -2,34 +2,43 @@ import { useMemo, useState } from "react";
 import "./App.css";
 import { UsersList } from "./components/UsersList";
 import { SortBy, type User } from "./types.d";
-import { useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery } from "@tanstack/react-query";
 
-const fetchUsers = async (page: number) => {
+const fetchUsers = async ({ pageParam = 1 }: { pageParam?: number }) => {
   return await fetch(
-    `https://randomuser.me/api?results=10&seed=ricky&page=${page}`
+    `https://randomuser.me/api?results=10&seed=ricky&page=${pageParam}`
   )
     .then(async (res) => {
       if (!res.ok) throw new Error("Failed to fetch users");
       return await res.json();
     })
-    .then((res) => res.results);
+    .then((res) => {
+      const currentPage = Number(res.info.page);
+      const nextCursor = currentPage > 10 ? undefined : currentPage + 1;
+
+      return {
+        users: res.results,
+        nextCursor,
+      };
+    });
 };
 
 function App() {
-  const {
-    isLoading,
-    isError,
-    data: users = [],
-  } = useQuery<User[]>({
-    queryKey: ["users"],
-    queryFn: async () => await fetchUsers(1),
-  });
+  const { isLoading, isError, data, refetch, fetchNextPage, hasNextPage } =
+    useInfiniteQuery<{
+      nextCursor?: number;
+      users: User[];
+    }>({
+      queryKey: ["users"],
+      queryFn: fetchUsers,
+      getNextPageParam: (lastPage) => lastPage.nextCursor,
+    });
+
+  const users: User[] = data?.pages?.flatMap((page) => page.users) ?? [];
 
   const [showColors, setShowColors] = useState(false);
   const [sorting, setSorting] = useState<SortBy>(SortBy.NONE);
   const [filterCountry, setFilterCountry] = useState<string | null>(null);
-
-  const [currentPage, setCurrentPage] = useState(1);
 
   const toggleColors = () => {
     setShowColors(!showColors);
@@ -42,7 +51,7 @@ function App() {
   };
 
   const handleReset = () => {
-    // setUsers(originalUsers.current);
+    void refetch();
   };
 
   const handleDelete = (email: string) => {
@@ -115,10 +124,14 @@ function App() {
 
         {isError && <p>Error loading users</p>}
 
-        {!isError && users.length === 0 && <p>No users found</p>}
+        {!isLoading && !isError && users.length === 0 && <p>No users found</p>}
 
         {!isLoading && !isError && (
-          <button onClick={() => setCurrentPage(currentPage + 1)}>
+          <button
+            onClick={() => {
+              void fetchNextPage();
+            }}
+          >
             Load more results
           </button>
         )}
