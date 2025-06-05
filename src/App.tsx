@@ -12,6 +12,7 @@ function App() {
   const [showColors, setShowColors] = useState(false);
   const [sorting, setSorting] = useState<SortBy>(SortBy.NONE);
   const [filterCountry, setFilterCountry] = useState<string | null>(null);
+  const [deletedUsers, setDeletedUsers] = useState<string[]>([]);
 
   const toggleColors = () => {
     setShowColors(!showColors);
@@ -24,12 +25,12 @@ function App() {
   };
 
   const handleReset = () => {
+    setDeletedUsers([]);
     void refetch();
   };
 
   const handleDelete = (email: string) => {
-    // const filteredUsers = users.filter((user) => user.email !== email);
-    // setUsers(filteredUsers);
+    setDeletedUsers((prev) => [...prev, email]);
   };
 
   const handleChangeSort = (sort: SortBy) => {
@@ -37,14 +38,18 @@ function App() {
   };
 
   const filteredUsers = useMemo(() => {
+    const notDeletedUsers = users.filter(
+      (user) => !deletedUsers.includes(user.email)
+    );
+
     return filterCountry != null && filterCountry.length > 0
-      ? users.filter((user) => {
+      ? notDeletedUsers.filter((user) => {
           return user.location.country
             .toLowerCase()
             .includes(filterCountry.toLowerCase());
         })
-      : users;
-  }, [users, filterCountry]);
+      : notDeletedUsers;
+  }, [users, filterCountry, deletedUsers]);
 
   const sortedUsers = useMemo(() => {
     if (sorting === SortBy.NONE) return filteredUsers;
